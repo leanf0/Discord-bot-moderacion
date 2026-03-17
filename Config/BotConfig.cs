@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Configuration;
-
 namespace DiscordBot.Config;
 
 public class BotConfig
@@ -10,18 +8,12 @@ public class BotConfig
 
     public BotConfig()
     {
-        var config = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false)
-            .Build();
+        Token = Environment.GetEnvironmentVariable("DISCORD_TOKEN")
+            ?? throw new Exception("Token no encontrado.");
 
-        Token = config["Bot:Token"]
-            ?? throw new Exception("Token no encontrado en appsettings.json");
+        Prefix = Environment.GetEnvironmentVariable("DISCORD_PREFIX")?[0] ?? '$';
 
-        Prefix = config["Bot:Prefix"]?[0] ?? '$';
-
-        LogChannelId = ulong.TryParse(config["Bot:LogChannelId"], out var id)
-            ? id
-            : throw new Exception("LogChannelId inválido en appsettings.json");
+        LogChannelId = ulong.TryParse(
+            Environment.GetEnvironmentVariable("LOG_CHANNEL_ID"), out var id) ? id : 0;
     }
 }
