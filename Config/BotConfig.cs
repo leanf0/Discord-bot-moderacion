@@ -9,7 +9,7 @@ public class BotConfig
     public BotConfig()
     {
         Token = Environment.GetEnvironmentVariable("DISCORD_TOKEN")
-            ?? throw new Exception("Token no encontrado.");
+            ?? throw new InvalidOperationException("La variable de entorno DISCORD_TOKEN no está definida.");
 
         Prefix = Environment.GetEnvironmentVariable("DISCORD_PREFIX")?[0] ?? '$';
 

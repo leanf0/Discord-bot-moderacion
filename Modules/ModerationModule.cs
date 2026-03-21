@@ -7,6 +7,9 @@ namespace DiscordBot.Modules;
 [RequireContext(ContextType.Guild)]
 public class ModerationModule : ModuleBase<SocketCommandContext>
 {
+    private const string LogPath = "logs/deleted_messages.log";
+    private const string LogChannelPath = "logs/logchannel.txt";
+
     private readonly LogService _logService;
     private readonly DiscordLogService _discordLog;
 
@@ -28,20 +31,12 @@ public class ModerationModule : ModuleBase<SocketCommandContext>
             return;
         }
 
-        var messages = (await Context.Channel.GetMessagesAsync(amount + 1).FlattenAsync()).ToList();
         var channel = (ITextChannel)Context.Channel;
         var deletedBy = Context.User.Username;
+        var messages = (await Context.Channel.GetMessagesAsync(amount + 1).FlattenAsync()).ToList();
         int total = messages.Count - 1;
 
-        foreach (var msg in messages)
-        {
-            await _logService.LogDeletedMessageAsync(
-                msg.Author.Username, msg.Author.Id.ToString(),
-                channel.Name, msg.Content, total, deletedBy);
-
-            await _discordLog.SendDeleteLogAsync(msg, channel.Name, deletedBy, total);
-        }
-
+        await LogDeletedMessages(messages, channel.Name, deletedBy, total);
         await channel.DeleteMessagesAsync(messages);
         await _discordLog.SendBulkDeleteSummaryAsync(channel.Name, total, deletedBy);
 
@@ -54,15 +49,13 @@ public class ModerationModule : ModuleBase<SocketCommandContext>
     [RequireUserPermission(GuildPermission.ManageMessages)]
     public async Task ShowLogAsync()
     {
-        const string path = "logs/deleted_messages.log";
-
-        if (!File.Exists(path))
+        if (!File.Exists(LogPath))
         {
             await ReplyAsync("📭 No hay registros todavía.");
             return;
         }
 
-        var lines = (await File.ReadAllLinesAsync(path)).TakeLast(10).ToArray();
+        var lines = (await File.ReadAllLinesAsync(LogPath)).TakeLast(10).ToArray();
 
         var embed = new EmbedBuilder()
             .WithTitle("📋 Log de mensajes borrados")
@@ -78,8 +71,20 @@ public class ModerationModule : ModuleBase<SocketCommandContext>
     [RequireUserPermission(GuildPermission.Administrator)]
     public async Task SetLogChannelAsync()
     {
-        var path = "logs/logchannel.txt";
-        await File.WriteAllTextAsync(path, Context.Channel.Id.ToString());
+        await File.WriteAllTextAsync(LogChannelPath, Context.Channel.Id.ToString());
         await ReplyAsync("✅ Este canal fue configurado como canal de logs.");
+    }
+
+    private async Task LogDeletedMessages(
+        IEnumerable<IMessage> messages, string channelName, string deletedBy, int total)
+    {
+        foreach (var msg in messages)
+        {
+            await _logService.LogDeletedMessageAsync(
+                msg.Author.Username, msg.Author.Id.ToString(),
+                channelName, msg.Content, total, deletedBy);
+
+            await _discordLog.SendDeleteLogAsync(msg, channelName, deletedBy, total);
+        }
     }
 }

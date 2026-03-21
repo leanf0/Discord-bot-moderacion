@@ -2,7 +2,7 @@ namespace DiscordBot.Services;
 
 public class LogService
 {
-    private readonly string _path = "logs/deleted_messages.log";
+    private const string LogPath = "logs/deleted_messages.log";
 
     public LogService()
         => Directory.CreateDirectory("logs");
@@ -17,6 +17,6 @@ public class LogService
                     $"Autor: {authorName} ({authorId}) | " +
                     $"Cantidad: {amount} | Contenido: {content}";
 
-        await File.AppendAllTextAsync(_path, entry + Environment.NewLine);
+        await File.AppendAllTextAsync(LogPath, entry + Environment.NewLine);
     }
 }

@@ -6,6 +6,8 @@ namespace DiscordBot.Services;
 
 public class DiscordLogService
 {
+    private const string LogChannelPath = "logs/logchannel.txt";
+
     private readonly DiscordSocketClient _client;
     private readonly ulong _logChannelId;
 
@@ -17,10 +19,9 @@ public class DiscordLogService
 
     private ulong GetLogChannelId()
     {
-        var path = "logs/logchannel.txt";
-        if (File.Exists(path))
+        if (File.Exists(LogChannelPath))
         {
-            var text = File.ReadAllText(path).Trim();
+            var text = File.ReadAllText(LogChannelPath).Trim();
             if (ulong.TryParse(text, out var id))
                 return id;
         }
