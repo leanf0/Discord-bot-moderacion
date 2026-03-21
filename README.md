@@ -1,19 +1,24 @@
-# Discord Moderation Bot
+# 🐱 Bot de Moderación para Discord
 
-Bot de moderación para Discord en C# con .NET 8. Prefijo `$`.
+Bot de moderación para Discord desarrollado en C# con .NET 8. Prefijo: `$`
 
 ## Comandos
 
-`$clear <n>` borra entre 1 y 100 mensajes. `$log` muestra los últimos 10 mensajes borrados. `$setlog` configura el canal actual como canal de logs.
-
-## Instalación
-
-Cloná el repo, copiá `appsettings.example.json` a `appsettings.json` y completá el token. Activá el **Message Content Intent** en el Discord Developer Portal y ejecutá `dotnet run`.
+| Comando | Descripción |
+|---|---|
+| `$clear <n>` | Borra entre 1 y 100 mensajes |
+| `$log` | Muestra los últimos 10 mensajes borrados |
+| `$setlog` | Configura el canal actual como canal de logs |
 
 ## Variables de entorno
 
-Si lo hosteás en Railway usá estas variables en lugar del `appsettings.json`: `DISCORD_TOKEN`, `DISCORD_PREFIX` y `LOG_CHANNEL_ID`.
+| Variable | Descripción |
+|---|---|
+| `DISCORD_TOKEN` | Token del bot |
+| `DISCORD_PREFIX` | Prefijo de comandos |
+| `LOG_CHANNEL_ID` | ID del canal de logs |
 
-## Importante
 
-Nunca subas `appsettings.json` a GitHub porque contiene tu token.
+## Deploy
+
+Este bot está configurado para deployarse en **Railway**. Definí las variables de entorno desde el panel y listo.
